@@ -1,11 +1,13 @@
+import { logger } from "@libs/logger";
 import { createHandler } from "@libs/middleware";
 import { ok } from "@libs/response";
-import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
+import { getAppointmentSchema, GetAppointmentEvent } from "@libs/schemas";
 
-const handler: APIGatewayProxyHandlerV2 = async (event) => {
+const handler = async (event: GetAppointmentEvent) => {
+  logger.info("body", event.pathParameters);
   return ok({
     message: `Hello!!`
   });
 };
 
-export const main = createHandler({ handler });
+export const main = createHandler({ handler, schema: getAppointmentSchema });
