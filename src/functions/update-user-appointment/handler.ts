@@ -17,7 +17,7 @@ const handler = async (event: UpdateAppointmentEvent) => {
     },
     {
       date: event.body.date,
-      doctorId: event.body.doctorId,
+      status: event.body.status,
       reminderMinutesBefore: event.body.reminderMinutesBefore
     }
   );

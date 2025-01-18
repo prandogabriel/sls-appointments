@@ -57,8 +57,17 @@ export class AppointmentService {
 
     return this.appointmentRepository.save({
       ...appointment,
-      ...updates
+      ...this.removeUndefinedFields(updates)
     });
+  }
+
+  private removeUndefinedFields<T>(obj: T): T {
+    return Object.entries(obj).reduce((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as T);
   }
 
   private async getAppointByUserOrFail({

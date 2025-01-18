@@ -33,9 +33,9 @@ export type DeleteAppointmentEvent = z.infer<typeof deleteAppointmentSchema>;
 
 export const updateAppointmentSchema = APIGatewayProxyEventSchema.extend({
   body: z.object({
-    doctorId: z.string(),
-    date: z.string().datetime(),
-    reminderMinutesBefore: z.number().int().positive()
+    status: z.enum(["PENDING", "DONE", "CANCELLED"]).optional(),
+    date: z.string().datetime().optional(),
+    reminderMinutesBefore: z.number().int().positive().optional()
   }),
   pathParameters: z.object({
     userId: z.string(),

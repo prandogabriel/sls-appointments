@@ -27,6 +27,19 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
     return `USER#${userId}`;
   }
 
+  private itemToAppointment(item: Record<string, any>): Appointment {
+    return {
+      id: item.id,
+      userId: item.userId,
+      status: item.status,
+      reminderMinutesBefore: item.reminderMinutesBefore,
+      date: item.date,
+      doctorId: item.doctorId,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
+    };
+  }
+
   async delete(userId: string, appointmentId: string): Promise<boolean> {
     await docClient.send(
       new DeleteCommand({
@@ -55,7 +68,11 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
       })
     );
 
-    return result.Item as Appointment | null;
+    if (!result.Item) {
+      return null;
+    }
+
+    return this.itemToAppointment(result.Item);
   }
 
   async getByUser(userId: string): Promise<Appointment[]> {
@@ -70,7 +87,7 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
       })
     );
 
-    return result.Items as Appointment[];
+    return result.Items.map((i) => this.itemToAppointment(i));
   }
 
   async save(appointment: Appointment): Promise<Appointment> {
