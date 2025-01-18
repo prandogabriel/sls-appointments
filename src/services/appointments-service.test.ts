@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AppointmentService } from "./appointments-service";
 import { AppointmentRepository } from "@repositories/appointments-repository";
 import { NotFoundException } from "@libs/exceptions";
 import { Appointment } from "@entities/appointment";
+import { AppointmentService } from "./appointments-service";
 import { CreateAppointmentInput } from "./types";
 
 vi.mock("node:crypto", () => ({
-  randomUUID: vi.fn(() => "mocked-uuid"),
+  randomUUID: vi.fn(() => "mocked-uuid")
 }));
 
 describe("AppointmentService", () => {
@@ -18,7 +18,7 @@ describe("AppointmentService", () => {
       save: vi.fn(),
       delete: vi.fn(),
       getByUser: vi.fn(),
-      getByUserAndId: vi.fn(),
+      getByUserAndId: vi.fn()
     } as unknown as AppointmentRepository;
 
     appointmentService = new AppointmentService(appointmentRepository);
@@ -29,31 +29,37 @@ describe("AppointmentService", () => {
       userId: "user-123",
       doctorId: "doctor-123",
       date: "2025-01-01T10:00:00Z",
-      reminderMinutesBefore: 60,
+      reminderMinutesBefore: 60
     };
 
     const expectedAppointment: Appointment = {
       ...input,
       id: "mocked-uuid",
       createdAt: expect.any(String),
-      status: "PENDING",
+      status: "PENDING"
     };
 
-    vi.spyOn(appointmentRepository, "save").mockResolvedValueOnce(expectedAppointment);
+    vi.spyOn(appointmentRepository, "save").mockResolvedValueOnce(
+      expectedAppointment
+    );
 
     const result = await appointmentService.createAppointment(input);
 
-    expect(appointmentRepository.save).toHaveBeenCalledWith(expectedAppointment);
+    expect(appointmentRepository.save).toHaveBeenCalledWith(
+      expectedAppointment
+    );
     expect(result).toEqual(expectedAppointment);
   });
 
   it("should throw NotFoundException when deleting a non-existent appointment", async () => {
-    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(null);
+    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(
+      null
+    );
 
     await expect(
       appointmentService.deleteAppointment({
         userId: "user-123",
-        appointmentId: "appointment-123",
+        appointmentId: "appointment-123"
       })
     ).rejects.toThrow(NotFoundException);
   });
@@ -66,15 +72,17 @@ describe("AppointmentService", () => {
       doctorId: "doctor-123",
       date: "2025-01-01T10:00:00Z",
       createdAt: "2025-01-01T09:00:00Z",
-      status: "PENDING",
+      status: "PENDING"
     };
 
-    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(mockAppointment);
+    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(
+      mockAppointment
+    );
     vi.spyOn(appointmentRepository, "delete").mockResolvedValueOnce(undefined);
 
     await appointmentService.deleteAppointment({
       userId: "user-123",
-      appointmentId: "appointment-123",
+      appointmentId: "appointment-123"
     });
 
     expect(appointmentRepository.getByUserAndId).toHaveBeenCalledWith(
@@ -88,7 +96,9 @@ describe("AppointmentService", () => {
   });
 
   it("should throw NotFoundException when updating a non-existent appointment", async () => {
-    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(null);
+    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(
+      null
+    );
 
     await expect(
       appointmentService.updateUserAppointment(
@@ -106,15 +116,17 @@ describe("AppointmentService", () => {
       date: "2025-01-01T10:00:00Z",
       reminderMinutesBefore: 60,
       createdAt: "2025-01-01T09:00:00Z",
-      status: "PENDING",
+      status: "PENDING"
     };
 
     const updates: Partial<Appointment> = { status: "DONE" };
 
-    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(mockAppointment);
+    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(
+      mockAppointment
+    );
     vi.spyOn(appointmentRepository, "save").mockResolvedValueOnce({
       ...mockAppointment,
-      ...updates,
+      ...updates
     });
 
     const result = await appointmentService.updateUserAppointment(
@@ -128,7 +140,7 @@ describe("AppointmentService", () => {
     );
     expect(appointmentRepository.save).toHaveBeenCalledWith({
       ...mockAppointment,
-      ...updates,
+      ...updates
     });
     expect(result).toEqual({ ...mockAppointment, ...updates });
   });
@@ -136,13 +148,20 @@ describe("AppointmentService", () => {
   it("should get user appointments", async () => {
     const mockAppointments: Appointment[] = [
       {
-        id: "appointment-1", status: "PENDING", reminderMinutesBefore: 60,
-        date: "2025-01", createdAt: "2025-01", updatedAt: "2025-01",
-        userId: "user-123", doctorId: "doctor-1"
-      },
+        id: "appointment-1",
+        status: "PENDING",
+        reminderMinutesBefore: 60,
+        date: "2025-01",
+        createdAt: "2025-01",
+        updatedAt: "2025-01",
+        userId: "user-123",
+        doctorId: "doctor-1"
+      }
     ];
 
-    vi.spyOn(appointmentRepository, "getByUser").mockResolvedValueOnce(mockAppointments);
+    vi.spyOn(appointmentRepository, "getByUser").mockResolvedValueOnce(
+      mockAppointments
+    );
 
     const result = await appointmentService.getUserAppointments("user-123");
 
@@ -152,24 +171,42 @@ describe("AppointmentService", () => {
 
   it("should get user appointment by id", async () => {
     const mockAppointment: Appointment = {
-      id: "appointment-1", status: "PENDING", reminderMinutesBefore: 60,
-      date: "2025-01", createdAt: "2025-01", updatedAt: "2025-01",
-      userId: "user-123", doctorId: "doctor-1"
+      id: "appointment-1",
+      status: "PENDING",
+      reminderMinutesBefore: 60,
+      date: "2025-01",
+      createdAt: "2025-01",
+      updatedAt: "2025-01",
+      userId: "user-123",
+      doctorId: "doctor-1"
     };
 
-    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(mockAppointment);
+    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(
+      mockAppointment
+    );
 
-    const result = await appointmentService.getUserAppointmentInfo({ userId: "user-123", appointmentId: "appointment-1" });
+    const result = await appointmentService.getUserAppointmentInfo({
+      userId: "user-123",
+      appointmentId: "appointment-1"
+    });
 
-    expect(appointmentRepository.getByUserAndId).toHaveBeenCalledWith("user-123", "appointment-1");
+    expect(appointmentRepository.getByUserAndId).toHaveBeenCalledWith(
+      "user-123",
+      "appointment-1"
+    );
     expect(result).toEqual(mockAppointment);
   });
 
   it("should throw NotFoundException when getting a non-existent appointment", async () => {
-    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(null);
+    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(
+      null
+    );
 
     await expect(
-      appointmentService.getUserAppointmentInfo({ userId: "user-123", appointmentId: "appointment-1" })
+      appointmentService.getUserAppointmentInfo({
+        userId: "user-123",
+        appointmentId: "appointment-1"
+      })
     ).rejects.toThrow(NotFoundException);
   });
 });
