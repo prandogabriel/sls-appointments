@@ -2,16 +2,19 @@ version: '3.8'
 
 services:
   localstack:
-    container_name: '${LOCALSTACK_DOCKER_NAME-localstack_main}'
-    image: localstack/localstack
-    network_mode: bridge
-    ports:
-      - '127.0.0.1:4510-4559:4510-4559' # external service port range
-      - '127.0.0.1:4566:4566' # LocalStack Edge Proxy
+    image: localstack/localstack:latest
+    ports: 
+      - 4566:4566
+      - '8080:8080' # Port for LocalStack web dashboard
     environment:
-      - AWS_DEFAULT_REGION=eu-east-1
+      - EDGE_PORT=4566
+      - BROWSING-TOPICS=1
+      - SERVICES=dynamodb
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
+      - AWS_ACCESS_KEY_ID=dummy
+      - AWS_SECRET_ACCESS_KEY=dummy 
     volumes:
-      - '/private/tmp/localstack:/tmp/localstack'
+      # - './.localstack:/tmp/localstack'
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - '/var/run/docker.sock:/var/run/docker.sock'

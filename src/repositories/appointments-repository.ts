@@ -1,4 +1,4 @@
-import { docClient } from "@libs/dynamodb";
+import { docClient as dc } from "@libs/dynamodb";
 import {
   GetCommand,
   PutCommand,
@@ -20,6 +20,8 @@ export interface AppointmentRepository {
 }
 
 export class AppointmentRepositoryImpl implements AppointmentRepository {
+  constructor(private readonly docClient: typeof dc = dc) {}
+
   private getSK(appointmentId: string): string {
     return `APPOINTMENT#${appointmentId}`;
   }
@@ -41,7 +43,7 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
   }
 
   async delete(userId: string, appointmentId: string): Promise<boolean> {
-    await docClient.send(
+    await this.docClient.send(
       new DeleteCommand({
         TableName: TABLE_NAME,
         Key: {
@@ -58,7 +60,7 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
     userId: string,
     appointmentId: string
   ): Promise<Appointment | null> {
-    const result = await docClient.send(
+    const result = await this.docClient.send(
       new GetCommand({
         TableName: TABLE_NAME,
         Key: {
@@ -76,7 +78,7 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
   }
 
   async getByUser(userId: string): Promise<Appointment[]> {
-    const result = await docClient.send(
+    const result = await this.docClient.send(
       new QueryCommand({
         TableName: TABLE_NAME,
         KeyConditionExpression: "PK = :pk AND begins_with(SK, :skPrefix)",
@@ -100,7 +102,7 @@ export class AppointmentRepositoryImpl implements AppointmentRepository {
       TableName: TABLE_NAME
     });
 
-    await docClient.send(putItemCommand);
+    await this.docClient.send(putItemCommand);
 
     return appointment;
   }
