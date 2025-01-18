@@ -1,14 +1,20 @@
-import { logger } from "@libs/logger";
 import { createHandler } from "@libs/middleware";
-import { ok } from "@libs/response";
+import { noContent } from "@libs/response";
 import { DeleteAppointmentEvent, deleteAppointmentSchema } from "@libs/schemas";
+import { AppointmentRepositoryImpl } from "@repositories/appointments-repository";
+import { AppointmentService } from "@services/appointments-service";
+
+const appointmentsService = new AppointmentService(
+  new AppointmentRepositoryImpl()
+);
 
 const handler = async (event: DeleteAppointmentEvent) => {
-  logger.info("pathParameters", event.pathParameters);
-
-  return ok({
-    message: `Hello!!`
+  await appointmentsService.deleteAppointment({
+    appointmentId: event.pathParameters.appointmentId,
+    userId: event.pathParameters.userId
   });
+
+  return noContent();
 };
 
 export const main = createHandler({ handler, schema: deleteAppointmentSchema });

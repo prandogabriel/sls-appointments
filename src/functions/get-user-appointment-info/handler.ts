@@ -1,13 +1,20 @@
-import { logger } from "@libs/logger";
 import { createHandler } from "@libs/middleware";
 import { ok } from "@libs/response";
 import { getAppointmentSchema, GetAppointmentEvent } from "@libs/schemas";
+import { AppointmentRepositoryImpl } from "@repositories/appointments-repository";
+import { AppointmentService } from "@services/appointments-service";
+
+const appointmentsService = new AppointmentService(
+  new AppointmentRepositoryImpl()
+);
 
 const handler = async (event: GetAppointmentEvent) => {
-  logger.info("body", event.pathParameters);
-  return ok({
-    message: `Hello!!`
+  const appointment = await appointmentsService.getUserAppointmentInfo({
+    appointmentId: event.pathParameters.appointmentId,
+    userId: event.pathParameters.userId
   });
+
+  return ok(appointment);
 };
 
 export const main = createHandler({ handler, schema: getAppointmentSchema });

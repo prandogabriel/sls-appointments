@@ -1,8 +1,14 @@
 import { parser } from "@aws-lambda-powertools/parser/middleware";
 import middy from "@middy/core";
-import { Handler } from "aws-lambda";
+import {
+  APIGatewayProxyResult,
+  Handler,
+  APIGatewayProxyEvent
+} from "aws-lambda";
 import { z } from "zod";
 import { ZodSchema } from "zod/lib/types";
+import { CustomException } from "./exceptions";
+import { logger } from "./logger";
 
 export type CreateHandlerInput<T> = {
   handler: T;
@@ -13,5 +19,43 @@ export function createHandler<T = Handler>({
   handler,
   schema = z.any()
 }: CreateHandlerInput<T>) {
-  return middy(handler).use(parser({ schema }));
+  return middy(handler).use(parser({ schema })).use(errorHandling());
+}
+
+export function errorHandling(): middy.MiddlewareObj<
+  Parameters<Handler>[0],
+  APIGatewayProxyResult
+> {
+  const onError: middy.MiddlewareFn<
+    APIGatewayProxyEvent,
+    APIGatewayProxyResult
+  > = async (request) => {
+    if (request.error instanceof CustomException) {
+      logger.error(request.error.message, {
+        error: request.error
+      });
+
+      return {
+        statusCode: request.error.code,
+        body: JSON.stringify({
+          message: request.error.message
+        })
+      };
+    }
+
+    logger.error(request.error?.message ?? "Error message N/A", {
+      error: request.error
+    });
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: "Internal server error"
+      })
+    };
+  };
+
+  return {
+    onError
+  };
 }
