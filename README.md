@@ -2,6 +2,18 @@
 
 This project provides a serverless CRUD application for managing appointment scheduling. It includes features like request validation, CI/CD pipelines, local testing with LocalStack, and comprehensive testing strategies.
 
+## Table of Contents
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation and Setup](#installation-and-setup)
+- [Scripts](#scripts)
+- [Testing](#testing)
+- [CI/CD](#ci-cd)
+- [Deployment](#deployment)
+- [Local Testing](#local-testing)
+- [Future Improvements](#future-improvements)
+
+
 ## Features
 
 - Serverless Architecture: Built using the Serverless Framework for efficient resource management.
@@ -91,7 +103,7 @@ yarn test:integration: Run integration tests with LocalStack.
   yarn lint: Run ESLint with auto-fix for code quality.
 ```
 
-## CI/CD
+## CI-CD
 
 The project includes CI/CD pipelines for the sandbox and production environments. These pipelines handle:
 
@@ -200,3 +212,47 @@ make delete-appointment
 make update-user-appointment
 
 ```
+
+## Future Improvements
+
+Here are some features and enhancements that could be implemented to further improve the project:
+
+### 1. Reminder Scheduling with EventBridge and Lambda
+
+*Description:* Implement a mechanism to schedule reminder messages for upcoming appointments using Amazon EventBridge and AWS Lambda.
+
+How it Works:
+
+Use EventBridge to create rules that trigger a Lambda function based on the appointment's reminderMinutesBefore value.
+
+The Lambda function can send reminder notifications (e.g., via email or SMS) to users before their appointment time.
+
+This approach ensures scalability and precise scheduling without manual intervention.
+
+### 2. Authentication with JWT
+
+Description: Introduce user authentication to improve security and simplify API usage.
+
+How it Works:
+
+Implement JWT-based authentication.
+
+Once authenticated, users receive a token containing their user ID and permissions.
+
+The user ID would no longer need to be passed in the URL for every request, as it could be extracted directly from the JWT.
+
+This adds a layer of security and ensures users can only access their own data.
+
+### 3. Routine for Database Cleanup
+
+Description: Add a routine to clean up old data or automatically update appointments with past dates.
+
+How it Works:
+
+Create a scheduled Lambda function using EventBridge that runs daily or hourly.
+
+The function scans for appointments where the date is in the past and updates their status to "DONE".
+
+Optionally, appointments older than a specific threshold (e.g., 6 months) could be archived or deleted to optimize database usage.
+
+These improvements can enhance the functionality, security, and maintainability of the system, making it more robust and user-friendly.
