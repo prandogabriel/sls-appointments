@@ -4,6 +4,12 @@
   "scripts": {
     "start": "sls offline start",
     "dev": "yarn start",
+    "deploy": "sls deploy",
+    "remove": "sls remove",
+    "deploy:dev": "sls deploy --stage sandbox --region us-west-1",
+    "remove:dev": "sls remove --stage sandbox --region us-west-1",
+    "deploy:prod": "sls deploy --stage production --region us-east-1",
+    "remove:prod": "sls remove --stage production --region us-east-1",
     "lint": "eslint --fix ./src/**/*.ts",
     "sls": "serverless"
   },

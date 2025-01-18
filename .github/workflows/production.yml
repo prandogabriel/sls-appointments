@@ -1,0 +1,20 @@
+name: Production
+run-name: Deploy to Production by ${{ github.actor }} on branch ${{ github.ref }}
+
+on:
+ workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+ deploy:
+    uses: prandogabriel/sls-appointments/.github/workflows/reusable_workflows_deploy.yml@main
+    with:
+      stage: production
+      region: us-east-1
+    secrets: inherit
+
+
+
