@@ -1,5 +1,5 @@
 import { buildHandler } from "@libs/middleware";
-import { ok } from "@libs/response";
+import { created } from "@libs/response";
 import { CreateAppointmentEvent, createAppointmentSchema } from "@libs/schemas";
 import { AppointmentRepositoryImpl } from "@repositories/appointments-repository";
 import { AppointmentService } from "@services/appointments-service";
@@ -17,7 +17,7 @@ const handler = async (event: CreateAppointmentEvent) => {
     reminderMinutesBefore: event.body.reminderMinutesBefore
   });
 
-  return ok(appointment);
+  return created(appointment);
 };
 
 export const main = buildHandler({

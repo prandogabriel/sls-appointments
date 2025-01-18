@@ -9,20 +9,28 @@ import { PutCommand } from "@aws-sdk/lib-dynamodb";
 import { docClient } from "../client";
 
 export const createTableMock = async (tableName: string) => {
-  await docClient.send(
-    new CreateTableCommand({
-      TableName: tableName,
-      KeySchema: [
-        { AttributeName: "PK", KeyType: "HASH" },
-        { AttributeName: "SK", KeyType: "RANGE" }
-      ],
-      AttributeDefinitions: [
-        { AttributeName: "PK", AttributeType: "S" },
-        { AttributeName: "SK", AttributeType: "S" }
-      ],
-      BillingMode: "PAY_PER_REQUEST"
-    })
-  );
+  // get table to check if exists already
+  try {
+    await docClient.send(
+      new CreateTableCommand({
+        TableName: tableName,
+        KeySchema: [
+          { AttributeName: "PK", KeyType: "HASH" },
+          { AttributeName: "SK", KeyType: "RANGE" }
+        ],
+        AttributeDefinitions: [
+          { AttributeName: "PK", AttributeType: "S" },
+          { AttributeName: "SK", AttributeType: "S" }
+        ],
+        BillingMode: "PAY_PER_REQUEST"
+      })
+    );
+  } catch (error) {
+    if (error.name === "ResourceInUseException") {
+      return;
+    }
+    throw error;
+  }
 };
 
 export const testUser = "test-user";

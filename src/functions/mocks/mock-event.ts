@@ -4,12 +4,13 @@ export type BuildEventMockInput = {
   body?: any;
   pathParameters?: any;
   queryStringParameters?: any;
+  httpMethod?: string;
 };
 export const buildAPIGwEventMock = (input: BuildEventMockInput) => {
   return {
     resource: "any",
     path: "any",
-    httpMethod: "GET",
+    httpMethod: input.httpMethod ?? "GET",
     headers: {
       Host: "localhost:3000",
       "User-Agent": "curl/8.5.0",
@@ -58,7 +59,7 @@ export const buildAPIGwEventMock = (input: BuildEventMockInput) => {
       path: "/users/test-user/appointments",
       operationName: undefined
     },
-    body: input.body ? JSON.stringify(input.body) : null,
+    body: input.body ? input.body : null,
     isBase64Encoded: false
   } as any as APIGatewayProxyEvent;
 };
