@@ -6,10 +6,14 @@ import {
   dropTableMock,
   testUser
 } from "@libs/dynamodb/mocks/mocks";
-import { buildAPIGwEventMock } from "@functions/mocks/mock-event";
+import {
+  buildGetAPIGwEventMock,
+  buildCreateAppointmentAPIGwEventMock
+} from "@functions/mocks/mock-event";
 import { main as getAppointmentsHandler } from "./get-user-appointments/handler";
 import { main as getAppointmentInfoHandler } from "./get-user-appointment-info/handler";
 import { main as createAppointmentHandler } from "./create-appointment/handler";
+import { main as deleteAppointmentHandler } from "./delete-appointment/handler";
 
 describe("Appointments Handlers Integration Test", () => {
   const tableName = "appointments";
@@ -25,7 +29,7 @@ describe("Appointments Handlers Integration Test", () => {
 
   describe("getAppointmentsHandler", () => {
     it("should return appointments for a user", async () => {
-      const event = buildAPIGwEventMock({
+      const event = buildGetAPIGwEventMock({
         pathParameters: { userId: testUser }
       });
 
@@ -37,7 +41,7 @@ describe("Appointments Handlers Integration Test", () => {
     });
 
     it("should return a empty array if user does not have appointments", async () => {
-      const event = buildAPIGwEventMock({
+      const event = buildGetAPIGwEventMock({
         pathParameters: { userId: "user-without-appointments" }
       });
 
@@ -52,7 +56,7 @@ describe("Appointments Handlers Integration Test", () => {
   describe("getAppointmentInfoHandler", () => {
     it("should return a appointment for a user", async () => {
       const { id: appointmentId, userId } = appointmentsMock[0];
-      const event = buildAPIGwEventMock({
+      const event = buildGetAPIGwEventMock({
         pathParameters: { userId, appointmentId }
       });
 
@@ -64,7 +68,7 @@ describe("Appointments Handlers Integration Test", () => {
     });
 
     it("should return a empty array if user does not have appointments", async () => {
-      const event = buildAPIGwEventMock({
+      const event = buildGetAPIGwEventMock({
         pathParameters: {
           userId: "user-without-appointments",
           appointmentId: "non-existing-id"
@@ -77,5 +81,89 @@ describe("Appointments Handlers Integration Test", () => {
     });
   });
 
-  // Add more tests here
+  describe("createAppointmentHandler", () => {
+    it("should create a new appointment", async () => {
+      const event = buildCreateAppointmentAPIGwEventMock();
+
+      const response = await createAppointmentHandler(event, {} as any);
+
+      const newAppointment = JSON.parse(response.body);
+
+      expect(response.statusCode).toBe(201);
+      expect(newAppointment.id).toBeDefined();
+
+      const getEvent = buildGetAPIGwEventMock({
+        pathParameters: {
+          userId: newAppointment.userId,
+          appointmentId: newAppointment.id
+        }
+      });
+
+      const getResponse = await getAppointmentInfoHandler(getEvent, {} as any);
+
+      const appointment = JSON.parse(getResponse.body);
+
+      expect(appointment).toEqual(newAppointment);
+    });
+  });
+
+  describe("deleteAppointmentHandler", () => {
+    it("should delete a appointment", async () => {
+      const event = buildCreateAppointmentAPIGwEventMock();
+
+      const response = await createAppointmentHandler(event, {} as any);
+
+      const newAppointment = JSON.parse(response.body);
+
+      expect(response.statusCode).toBe(201);
+      expect(newAppointment.id).toBeDefined();
+
+      const getEvent = buildGetAPIGwEventMock({
+        pathParameters: {
+          userId: newAppointment.userId,
+          appointmentId: newAppointment.id
+        }
+      });
+
+      const getResponse = await getAppointmentInfoHandler(getEvent, {} as any);
+
+      const appointment = JSON.parse(getResponse.body);
+
+      expect(appointment).toEqual(newAppointment);
+
+      const deleteEvent = buildGetAPIGwEventMock({
+        pathParameters: {
+          userId: newAppointment.userId,
+          appointmentId: newAppointment.id
+        }
+      });
+
+      const deleteResponse = await deleteAppointmentHandler(
+        deleteEvent,
+        {} as any
+      );
+
+      expect(deleteResponse.statusCode).toBe(204);
+
+      const getDeletedResponse = await getAppointmentInfoHandler(
+        getEvent,
+        {} as any
+      );
+
+      expect(getDeletedResponse.statusCode).toBe(404);
+    });
+
+    it("should return 404 when appointment does not exists", async () => {
+      const event = buildGetAPIGwEventMock({
+        pathParameters: {
+          userId: "user-without-appointments",
+          appointmentId: "non-existing-id"
+        }
+      });
+
+      const response = await deleteAppointmentHandler(event, {} as any);
+
+      expect(response.statusCode).toBe(404);
+    });
+  });
 });
