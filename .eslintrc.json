@@ -78,6 +78,12 @@
     "rules": {
       "sonarjs/no-duplicate-string": "off"
     }
+  },
+  {
+    "files": ["serverless*.ts"],
+    "rules": {
+      "import/no-import-module-exports": "off"
+    }
   }
 ]
 }
