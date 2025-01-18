@@ -1,3 +1,4 @@
+import { daysAhead } from "@libs/date";
 import { APIGatewayProxyEvent } from "aws-lambda";
 
 export type BuildEventMockInput = {
@@ -122,7 +123,7 @@ export const buildCreateAppointmentAPIGwEventMock = () => {
     },
     body: JSON.stringify({
       doctorId: "doctor-123",
-      date: "2025-01-01T10:00:00Z",
+      date: daysAhead(new Date(), 1).toISOString(),
       reminderMinutesBefore: 60
     }),
     isBase64Encoded: false

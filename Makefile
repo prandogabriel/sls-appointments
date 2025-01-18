@@ -8,7 +8,7 @@ create-appointment:
 	-H "Content-Type: application/json" \
 	-d "{ \
 		\"doctorId\": \"doctor-123\", \
-		\"date\": \"2025-01-01T10:00:00Z\", \
+		\"date\": \"2026-01-01T10:00:00Z\", \
 		\"reminderMinutesBefore\": 60 \
 	}" | jq
 
@@ -26,7 +26,7 @@ update-user-appointment:
 	curl -X PUT "$(API_URL)/users/$(USER_ID)/appointments/$(APPOINTMENT_ID)" \
 	-H "Content-Type: application/json" \
 	-d "{ \
-		\"date\": \"2025-01-02T12:00:00Z\", \
+		\"date\": \"2026-01-02T12:00:00Z\", \
 		\"reminderMinutesBefore\": 30, \
 		\"status\": \"DONE\" \
 	}" | jq

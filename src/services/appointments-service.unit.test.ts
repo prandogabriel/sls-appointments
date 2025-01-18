@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AppointmentRepository } from "@repositories/appointments-repository";
 import { NotFoundException } from "@libs/exceptions";
 import { Appointment } from "@entities/appointment";
+import { daysAgo, daysAhead } from "@libs/date";
 import { AppointmentService } from "./appointments-service";
 import { CreateAppointmentInput } from "./types";
 
@@ -28,7 +29,7 @@ describe("AppointmentService", () => {
     const input: CreateAppointmentInput = {
       userId: "user-123",
       doctorId: "doctor-123",
-      date: "2025-01-01T10:00:00Z",
+      date: daysAhead(new Date(), 1).toISOString(),
       reminderMinutesBefore: 60
     };
 
@@ -49,6 +50,17 @@ describe("AppointmentService", () => {
       expectedAppointment
     );
     expect(result).toEqual(expectedAppointment);
+  });
+
+  it("should throw BadRequestException when date to create new appointment is in the past", async () => {
+    const input: CreateAppointmentInput = {
+      userId: "user-123",
+      doctorId: "doctor-123",
+      date: "2020-01-01T10:00:00Z",
+      reminderMinutesBefore: 60
+    };
+
+    await expect(appointmentService.createAppointment(input)).rejects.toThrow();
   });
 
   it("should throw NotFoundException when deleting a non-existent appointment", async () => {
@@ -93,6 +105,52 @@ describe("AppointmentService", () => {
       "user-123",
       "appointment-123"
     );
+  });
+
+  it("should throw BadRequestException when deleting a non-pending appointment", async () => {
+    const mockAppointment: Appointment = {
+      id: "appointment-123",
+      reminderMinutesBefore: 60,
+      userId: "user-123",
+      doctorId: "doctor-123",
+      date: "2025-01-01T10:00:00Z",
+      createdAt: "2025-01-01T09:00:00Z",
+      status: "DONE"
+    };
+
+    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(
+      mockAppointment
+    );
+
+    await expect(
+      appointmentService.deleteAppointment({
+        userId: "user-123",
+        appointmentId: "appointment-123"
+      })
+    ).rejects.toThrow();
+  });
+
+  it("should throw BadRequestException when updating an appointment in the past", async () => {
+    const mockAppointment: Appointment = {
+      id: "appointment-123",
+      reminderMinutesBefore: 60,
+      userId: "user-123",
+      doctorId: "doctor-123",
+      date: daysAhead(new Date(), 1).toISOString(),
+      createdAt: "2025-01-01T09:00:00Z",
+      status: "PENDING"
+    };
+
+    vi.spyOn(appointmentRepository, "getByUserAndId").mockResolvedValueOnce(
+      mockAppointment
+    );
+
+    await expect(
+      appointmentService.updateUserAppointment(
+        { userId: "user-123", appointmentId: "appointment-123" },
+        { date: daysAgo(new Date(), 1).toISOString() }
+      )
+    ).rejects.toThrow();
   });
 
   it("should throw NotFoundException when updating a non-existent appointment", async () => {
