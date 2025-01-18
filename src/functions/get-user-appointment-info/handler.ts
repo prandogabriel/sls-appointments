@@ -1,4 +1,4 @@
-import { createHandler } from "@libs/middleware";
+import { buildHandler } from "@libs/middleware";
 import { ok } from "@libs/response";
 import { getAppointmentSchema, GetAppointmentEvent } from "@libs/schemas";
 import { AppointmentRepositoryImpl } from "@repositories/appointments-repository";
@@ -17,4 +17,4 @@ const handler = async (event: GetAppointmentEvent) => {
   return ok(appointment);
 };
 
-export const main = createHandler({ handler, schema: getAppointmentSchema });
+export const main = buildHandler({ handler, schema: getAppointmentSchema });

@@ -1,8 +1,9 @@
-import { createHandler } from "@libs/middleware";
+import { buildHandler } from "@libs/middleware";
 import { ok } from "@libs/response";
 import { CreateAppointmentEvent, createAppointmentSchema } from "@libs/schemas";
 import { AppointmentRepositoryImpl } from "@repositories/appointments-repository";
 import { AppointmentService } from "@services/appointments-service";
+import httpJsonBodyParser from "@middy/http-json-body-parser";
 
 const appointmentsService = new AppointmentService(
   new AppointmentRepositoryImpl()
@@ -19,4 +20,8 @@ const handler = async (event: CreateAppointmentEvent) => {
   return ok(appointment);
 };
 
-export const main = createHandler({ handler, schema: createAppointmentSchema });
+export const main = buildHandler({
+  handler,
+  schema: createAppointmentSchema,
+  middlewares: [httpJsonBodyParser()]
+});

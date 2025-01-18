@@ -1,5 +1,5 @@
 import { parser } from "@aws-lambda-powertools/parser/middleware";
-import middy from "@middy/core";
+import middy, { MiddlewareObj } from "@middy/core";
 import {
   APIGatewayProxyResult,
   Handler,
@@ -7,24 +7,31 @@ import {
 } from "aws-lambda";
 import { z } from "zod";
 import { ZodSchema } from "zod/lib/types";
-import httpJsonBodyParser from "@middy/http-json-body-parser";
 
 import { CustomException } from "./exceptions";
 import { logger } from "./logger";
 
-export type CreateHandlerInput<T> = {
+export type buildHandlerInput<T> = {
   handler: T;
   schema?: ZodSchema;
 };
 
-export function createHandler<T = Handler>({
+interface HandlerBuilder<T> {
+  handler: T;
+  schema?: z.ZodSchema;
+  middlewares?: MiddlewareObj<any, any>[];
+}
+
+export function buildHandler<T = Handler>({
   handler,
-  schema = z.any()
-}: CreateHandlerInput<T>) {
-  return middy(handler)
-    .use(httpJsonBodyParser())
-    .use(errorHandling())
-    .use(parser({ schema }));
+  schema = z.any(),
+  middlewares = []
+}: HandlerBuilder<T>) {
+  const baseHandler = middy(handler);
+
+  middlewares.forEach((middleware) => baseHandler.use(middleware));
+
+  return baseHandler.use(errorHandling()).use(parser({ schema }));
 }
 
 export function errorHandling(): middy.MiddlewareObj<
