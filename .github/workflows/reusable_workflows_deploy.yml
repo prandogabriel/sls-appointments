@@ -55,20 +55,19 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    steps:
+    steps:  
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v4
+
       - name: 🛠️ Setup docker
         run: |
-          sudo rm /usr/local/bin/docker-compose
           curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /tmp/docker-compose
           chmod +x /tmp/docker-compose
           sudo mv /tmp/docker-compose /usr/local/bin/docker-compose
   
       - name: 🏃 Start localstack
         run: docker-compose up -d localstack
-  
-      - name: 🛎️ Checkout
-        uses: actions/checkout@v4
-
+      
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v4
         with:
