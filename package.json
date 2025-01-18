@@ -12,7 +12,7 @@
     "remove:prod": "sls remove --stage production --region us-east-1",
     "lint": "eslint --fix ./src/**/*.ts",
     "sls": "serverless",
-    "test": "ENVIRONMENT=test vitest",
+    "test": "DYNAMODB_TABLE_NAME=appointments-test ENVIRONMENT=test vitest",
     "test:integration": "yarn test integration",
     "test:unit": "yarn test unit"
   },
@@ -49,6 +49,7 @@
     "prettier": "^3.0.0",
     "serverless": "^3.0.0",
     "serverless-esbuild": "^1.23.3",
+    "serverless-localstack": "^1.3.1",
     "serverless-offline": "^13.6.0",
     "ts-node": "^10.4.0",
     "tsconfig-paths": "^3.9.0",

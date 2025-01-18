@@ -6,7 +6,11 @@ const serverlessConfiguration: AWS = {
   service: "sls-appointments",
   frameworkVersion: "3",
   useDotenv: true,
-  plugins: ["serverless-esbuild", "serverless-offline"],
+  plugins: [
+    "serverless-esbuild",
+    "serverless-offline",
+    "serverless-localstack"
+  ],
   provider: {
     name: "aws",
     runtime: "nodejs20.x",
@@ -52,6 +56,9 @@ const serverlessConfiguration: AWS = {
       define: { "require.resolve": undefined },
       platform: "node",
       concurrency: 10
+    },
+    localstack: {
+      stages: ["local"]
     }
   },
   resources: serverlessResources
