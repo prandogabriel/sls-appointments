@@ -2,7 +2,10 @@ name: Production
 run-name: Deploy to Production by ${{ github.actor }} on branch ${{ github.ref }}
 
 on:
- workflow_dispatch:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 defaults:
   run:

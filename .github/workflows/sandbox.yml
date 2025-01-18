@@ -3,7 +3,7 @@ run-name: Deploy to Sandbox by ${{ github.actor }} on branch ${{ github.ref }}
 
 on:
   workflow_dispatch:
-
+  push:
 defaults:
   run:
     shell: bash

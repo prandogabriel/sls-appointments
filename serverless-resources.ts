@@ -2,10 +2,10 @@ import type { AWS } from "@serverless/typescript";
 
 export const serverlessResources: AWS["resources"] = {
   Resources: {
-    appointmentsTable: {
+    AppointmentsTable: {
       Type: "AWS::DynamoDB::Table",
       Properties: {
-        TableName: "appointments",
+        TableName: "appointments-${opt:stage, 'sandbox'}",
         AttributeDefinitions: [
           {
             AttributeName: "PK", // Partition Key

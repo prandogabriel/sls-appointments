@@ -7,7 +7,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { Appointment } from "../entities/appointment";
 
-const TABLE_NAME = "appointments";
+const TABLE_NAME = process.env.DYNAMODB_TABLE_NAME;
 
 export interface AppointmentRepository {
   delete(userId: string, appointmentId: string): Promise<boolean>;

@@ -16,7 +16,7 @@ import { main as createAppointmentHandler } from "./create-appointment/handler";
 import { main as deleteAppointmentHandler } from "./delete-appointment/handler";
 
 describe("Appointments Handlers Integration Test", () => {
-  const tableName = "appointments";
+  const tableName = process.env.DYNAMODB_TABLE_NAME;
 
   beforeAll(async () => {
     await createTableMock(tableName);
