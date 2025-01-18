@@ -10,7 +10,7 @@ create-appointment:
 	-d "{ \
 		\"doctorId\": \"doctor-123\", \
 		\"date\": \"2025-01-01T10:00:00Z\", \
-		\"reminderTime\": 60 \
+		\"reminderMinutesBefore\": 60 \
 	}"
 
 
@@ -31,3 +31,6 @@ update-user-appointment:
 		"reminderTime": 30,
 		"status": "DONE"
 	}'
+
+start-dev:
+	yarn dev

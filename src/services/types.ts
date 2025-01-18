@@ -2,7 +2,7 @@ export type CreateAppointmentInput = {
   userId: string;
   doctorId: string;
   date: string;
-  reminderTimeBefore: number;
+  reminderMinutesBefore: number;
 };
 
 export type AppointmentIdsInput = {

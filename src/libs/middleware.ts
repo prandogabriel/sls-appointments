@@ -7,6 +7,8 @@ import {
 } from "aws-lambda";
 import { z } from "zod";
 import { ZodSchema } from "zod/lib/types";
+import httpJsonBodyParser from "@middy/http-json-body-parser";
+
 import { CustomException } from "./exceptions";
 import { logger } from "./logger";
 
@@ -19,7 +21,10 @@ export function createHandler<T = Handler>({
   handler,
   schema = z.any()
 }: CreateHandlerInput<T>) {
-  return middy(handler).use(parser({ schema })).use(errorHandling());
+  return middy(handler)
+    .use(httpJsonBodyParser())
+    .use(errorHandling())
+    .use(parser({ schema }));
 }
 
 export function errorHandling(): middy.MiddlewareObj<

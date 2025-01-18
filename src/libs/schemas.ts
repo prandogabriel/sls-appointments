@@ -5,7 +5,7 @@ export const createAppointmentSchema = APIGatewayProxyEventSchema.extend({
   body: z.object({
     doctorId: z.string(),
     date: z.string().datetime(),
-    reminderTimeBefore: z.number().int().positive()
+    reminderMinutesBefore: z.number().int().positive()
   }),
   pathParameters: z.object({
     userId: z.string()
@@ -35,7 +35,7 @@ export const updateAppointmentSchema = APIGatewayProxyEventSchema.extend({
   body: z.object({
     doctorId: z.string(),
     date: z.string().datetime(),
-    reminderTimeBefore: z.number().int().positive()
+    reminderMinutesBefore: z.number().int().positive()
   }),
   pathParameters: z.object({
     userId: z.string(),

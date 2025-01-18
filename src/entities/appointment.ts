@@ -3,7 +3,7 @@ export interface Appointment {
   userId: string;
   doctorId: string;
   date: string;
-  reminderTimeBefore: number;
+  reminderMinutesBefore: number;
   status: "PENDING" | "DONE" | "CANCELLED";
   createdAt: string;
   updatedAt?: string;

@@ -13,7 +13,7 @@ const handler = async (event: CreateAppointmentEvent) => {
     date: event.body.date,
     doctorId: event.body.doctorId,
     userId: event.pathParameters.userId,
-    reminderTimeBefore: event.body.reminderTimeBefore
+    reminderMinutesBefore: event.body.reminderMinutesBefore
   });
 
   return ok(appointment);
