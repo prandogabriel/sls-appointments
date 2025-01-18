@@ -9,7 +9,7 @@ defaults:
     shell: bash
 
 jobs:
- deploy:
+  production:
     uses: prandogabriel/sls-appointments/.github/workflows/reusable_workflows_deploy.yml@main
     with:
       stage: production
