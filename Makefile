@@ -1,8 +1,8 @@
-.PHONY: create-appointment delete-appointment get-user-appointments get-user-appointment-info update-user-appointment
-
+# env vars to local requests
 API_URL=http://localhost:3000/dev
 USER_ID=test-user
 APPOINTMENT_ID=45fc29c7-3ebc-42a8-b416-72cc47da39d9
+
 create-appointment:
 	curl -X POST "$(API_URL)/users/$(USER_ID)/appointments" \
 	-H "Content-Type: application/json" \
@@ -33,3 +33,13 @@ update-user-appointment:
 
 start-dev:
 	yarn dev
+
+deploy-localstack:
+	docker-compose up -d 
+	yarn deploy:localstack
+
+deploy-dev:
+	yarn deploy:dev
+
+deploy-prod:
+	yarn deploy:prod

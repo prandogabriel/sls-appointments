@@ -10,6 +10,8 @@
     "remove:dev": "sls remove --stage sandbox --region us-west-1",
     "deploy:prod": "sls deploy --stage production --region us-east-1",
     "remove:prod": "sls remove --stage production --region us-east-1",
+    "deploy:localstack": "sls deploy --stage local --region us-east-1",
+    "remove:localstack": "sls remove --stage local --region us-east-1",
     "lint": "eslint --fix ./src/**/*.ts",
     "sls": "serverless",
     "test": "DYNAMODB_TABLE_NAME=appointments-test ENVIRONMENT=test vitest",
